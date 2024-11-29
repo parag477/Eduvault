@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 
@@ -9,11 +9,8 @@ const CourseDetails = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchCourseDetails();
-  }, [courseId]);
 
-  const fetchCourseDetails = async () => {
+  const fetchCourseDetails = useCallback(async () => {
     try {
       const response = await api.get(`/courses/${courseId}`);
       setCourse(response.data);
@@ -22,7 +19,12 @@ const CourseDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [courseId]);
+
+  useEffect(() => {
+    fetchCourseDetails();
+  }, [fetchCourseDetails]);
+  
 
   if (loading) {
     return (
